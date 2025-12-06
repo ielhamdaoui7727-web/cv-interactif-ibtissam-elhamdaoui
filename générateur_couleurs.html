@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Couleurs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            background-color: #3b82f6;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 40px;
+        }
+
+        .color-display {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        .color-code {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-type {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 18px 35px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .generate-btn:hover {
+            background: linear-gradient(135deg, #5568d3, #6a3f8f);
+        }
+
+        .copy-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+        }
+
+        .color-history {
+            margin-top: 30px;
+        }
+
+        .color-history h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .history-colors {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .history-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .history-item:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .color-code {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">✓ Code couleur copié !</div>
+
+    <div class="container">
+        <h1><span>🎨</span> Générateur de Couleurs</h1>
+        <p class="subtitle">Cliquez pour générer une couleur aléatoire</p>
+
+        <div class="color-display" id="colorDisplay">
+            <div class="color-code" id="colorCode">#3b82f6</div>
+            <div class="color-type">Code Hexadécimal</div>
+        </div>
+
+        <div class="buttons">
+            <button class="generate-btn" onclick="generateColor()">
+                ✨ Générer une Couleur
+            </button>
+            <button class="copy-btn" onclick="copyColor()">
+                📋 Copier le Code
+            </button>
+        </div>
+
+        <div class="color-history">
+            <h3>Historique des couleurs</h3>
+            <div class="history-colors" id="historyColors">
+                <!-- Les couleurs seront ajoutées ici -->
+            </div>
+        </div>
+
+        <div class="footer">
+            Créé par Ibtissam Elhamdaoui
+        </div>
+    </div>
+
+    <script>
+        let currentColor = '#3b82f6';
+        let colorHistory = [];
+
+        function generateRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function generateColor() {
+            currentColor = generateRandomColor();
+            
+            // Mettre à jour l'affichage
+            document.getElementById('colorCode').textContent = currentColor;
+            document.getElementById('colorDisplay').style.background = currentColor;
+            document.body.style.backgroundColor = currentColor;
+            
+            // Ajouter à l'historique
+            addToHistory(currentColor);
+            
+            // Animation
+            const display = document.getElementById('colorDisplay');
+            display.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                display.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function addToHistory(color) {
+            // Éviter les doublons
+            if (colorHistory.includes(color)) return;
+            
+            colorHistory.unshift(color);
+            
+            // Garder seulement les 8 dernières couleurs
+            if (colorHistory.length > 8) {
+                colorHistory.pop();
+            }
+            
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const container = document.getElementById('historyColors');
+            container.innerHTML = '';
+            
+            colorHistory.forEach(color => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.style.backgroundColor = color;
+                div.title = color;
+                div.onclick = () => useHistoryColor(color);
+                container.appendChild(div);
+            });
+        }
+
+        function useHistoryColor(color) {
+            currentColor = color;
+            document.getElementById('colorCode').textContent = color;
+            document.getElementById('colorDisplay').style.background = color;
+            document.body.style.backgroundColor = color;
+        }
+
+        function copyColor() {
+            // Copier dans le presse-papiers
+            navigator.clipboard.writeText(currentColor).then(() => {
+                showNotification();
+            }).catch(err => {
+                // Fallback pour les navigateurs anciens
+                const textarea = document.createElement('textarea');
+                textarea.value = currentColor;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification();
+            });
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Support clavier : Espace pour générer, C pour copier
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                generateColor();
+            }
+            if (e.key === 'c' || e.key === 'C') {
+                copyColor();
+            }
+        });
+
+        // Initialiser l'historique avec quelques couleurs
+        addToHistory('#3b82f6');
+    </script>
+</body>
+</html>
